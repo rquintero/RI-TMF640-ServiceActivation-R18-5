@@ -1,6 +1,6 @@
 FROM node
 
-LABEL "RQ Digital Transformation"
+LABEL "co.rq.appNode"="RQ Digital Transformation"
 LABEL maintainer="neus71@hotmail.com"
 LABEL version="1.0"
 
