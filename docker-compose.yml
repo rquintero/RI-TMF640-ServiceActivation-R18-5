@@ -1,0 +1,14 @@
+version: '3'
+services:
+  db:
+    container_name: "db"
+    image: lowdef/rpi3-mongodb3.2
+    ports:
+      - 27017:27017
+      - 28017:28017
+  web:
+    image: master1qr/tm-640-node
+    depends_on:
+      - db
+    ports:
+      - 8000:8080
