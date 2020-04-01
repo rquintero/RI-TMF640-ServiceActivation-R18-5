@@ -1,11 +1,16 @@
 version: '3'
 services:
   db:
-    container_name: "db"
+    container_name: db
+    restart: unless-stopped
     image: lowdef/rpi3-mongodb3.2
     ports:
       - 27017:27017
       - 28017:28017
+    volumes:
+      - /data/db:/data/db
+      - /data/configdb:/data/configdb 
+    command: bash -c "mongod --storageEngine mmapv1" 
   web:
     image: master1qr/tm-640-node
     depends_on:
