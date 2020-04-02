@@ -33,32 +33,59 @@ kind: PersistentVolumeClaim
 metadata:
   name: data
 spec:
-  storageClassName: manual 
+  storageClassName: manual
   accessModes: [ReadWriteOnce]
   resources:
     requests:
-      storage: 256Mi 
+      storage: 256Mi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: configdb 
+  name: configdb
 spec:
-  storageClassName: manual 
+  storageClassName: manual
   accessModes: [ReadWriteOnce]
   resources:
     requests:
-      storage: 128Mi 
+      storage: 128Mi
 
 ---
 apiVersion: v1
-kind: Pod 
+kind: Service
 metadata:
-  name: some-mongo  
+  name: db-sevice
   labels:
+    name: db-service
+    context: tmf640
 spec:
+  ports:
+    - name: api
+      port: 27017
+    - name: query
+      port: 28017
+  selector:
+    name: db-rc-pod
+    context: tmf640
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: db-rc
+  labels:
+    name: db-rc
+    context: tmf640
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: db-rc-pod
+      labels:
+        name: db_rc-pod
+        context: tmf640
+    spec:
       containers:
-        - name: some-mongo 
+        - name: db
           image: lowdef/rpi3-mongodb3.2
           ports:
             - containerPort: 27017
@@ -68,9 +95,9 @@ spec:
             - "--storageEngine"
             - "mmapv1"
           volumeMounts:
-            - name: data 
+            - name: data
               mountPath: /data/db
-            - name: configdb 
+            - name: configdb
               mountPath: /data/configdb
       volumes:
         - name: data
@@ -78,4 +105,25 @@ spec:
             claimName: data
         - name: configdb
           persistentVolumeClaim:
-            claimName: configdb 
+            claimName: configdb
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: web-rc
+  labels:
+    name: web-rc
+    context: tmf640
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: web-rc-pod
+        context: tmf640
+    spec:
+      containers:
+        - name: web-rc-pod
+          image: master1qr/tm-640-node
+          ports:
+            - containerPort: 8080
