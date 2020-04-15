@@ -54,18 +54,21 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: db-sevice
+  name: db
   labels:
-    name: db-service
+    name: db
     context: tmf640
 spec:
+  type: NodePort
   ports:
     - name: api
       port: 27017
+      targetPort: 27017
     - name: query
       port: 28017
+      targetPort: 28017
   selector:
-    name: db-rc-pod
+    name: db_rc-pod
     context: tmf640
 ---
 apiVersion: v1
